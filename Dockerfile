@@ -1,5 +1,5 @@
 ARG ALPINE_TAG=3.8
-FROM spritsail/alpine:${ALPINE_TAG}
+FROM spritsail/alpine:latest
 
 RUN apk --no-cache add cmake make gcc g++ libc-dev linux-headers
 
