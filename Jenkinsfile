@@ -4,10 +4,11 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building.. in $PWD'
+                echo 'Building...'
+                pwd
                 mkdir build
                 dir build (
-                    echo 'Building.. in $PWD'
+                    pwd
                     cmake ..
                     make all
                 )
@@ -15,7 +16,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo 'Testing.. in $PWD'
+                echo 'Testing...'
                 dir build (
                     if (fileExists('./bin/unit_tests')) {
                         ./bin/unit_tests
