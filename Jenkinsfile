@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
-                sh "mkdir -p build"
+                sh 'mkdir -p build'
                 dir ("build") {
                     sh 'cmake ..'
                     sh 'make all'
