@@ -16,11 +16,7 @@ pipeline {
             steps {
                 echo 'Testing...'
                 dir ("build") {
-                    if (fileExists('./bin/unit_tests')) {
-                        sh './bin/unit_tests'
-                    } else {
-                        error 'Could not create unit_tests executable'
-                    }
+                    sh './bin/unit_tests'
                 }
             }
         }
