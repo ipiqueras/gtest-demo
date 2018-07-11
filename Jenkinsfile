@@ -9,8 +9,8 @@ pipeline {
                 mkdir build
                 dir build (
                     pwd
-                    cmake ..
-                    make all
+                    sh 'cmake ..'
+                    sh 'make all'
                 )
             }
         }
@@ -19,7 +19,7 @@ pipeline {
                 echo 'Testing...'
                 dir build (
                     if (fileExists('./bin/unit_tests')) {
-                        ./bin/unit_tests
+                        sh './bin/unit_tests'
                     } else {
                         error 'Could not create unit_tests executable'
                     }
