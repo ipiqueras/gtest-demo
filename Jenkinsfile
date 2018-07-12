@@ -3,8 +3,10 @@ pipeline {
 
     stages {
         stage('Prepare') {
-            echo 'Removing any previous report...'
-            sh 'rm -f build/*.xml'
+            steps {
+                echo 'Removing any previous report...'
+                sh 'rm -f build/*.xml'
+            }
         }
         stage('Build') {
             steps {
