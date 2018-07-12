@@ -30,7 +30,7 @@ To run the example just type:
 
 ~~~
 $ docker run -u root --mount
-type=bind,source=/home/ignacio-piqueras/garage,target=/garage -p 8080:8080 -v /var/run/docker.sock:/var/run/docker.sock --group-add docker shimmi/jenkins
+type=bind,source=/home/ignacio-piqueras/garage,target=/garage -p 8080:8080 -v /home/ignacio-piqueras/jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock --group-add docker shimmi/jenkins
 ~~~
 
 The bind mount from my local directory to the `/garage` directory in the
