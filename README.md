@@ -1,74 +1,56 @@
-[![Build Status](https://travis-ci.org/bast/gtest-demo.svg?branch=master)](https://travis-ci.org/bast/gtest-demo/builds)
-[![Coverage Status](https://coveralls.io/repos/bast/gtest-demo/badge.png?branch=master)](https://coveralls.io/r/bast/gtest-demo?branch=master)
-[![License](https://img.shields.io/badge/license-%20BSD--3-blue.svg)](../master/LICENSE)
+# CI example using Jenkins
 
+**Forked from** https://github.com/bast/gtest-demo 
 
-# gtest-demo
+The purpose of this example is to understand how to use Jenkins Pipelines to
+execute unit tests on C++ code that sets Google Test and uses CMake to build and
+fetch the Google Test library.
 
-C/C++ unit test demo using [Google Test](https://code.google.com/p/googletest) deployed to
-[Travis-CI](https://travis-ci.org/bast/gtest-demo/builds) with test coverage
-deployed to [Coveralls](https://coveralls.io/r/bast/gtest-demo).
+The code is built using a Docker image that gets run by Jenkins trough a 
+*Docker agent*. Instead of pulling an image from a Docker Hub, Jenkins builds
+the image from a `Dokerfile` and runs any step though the container.
 
-- [Build and test history](https://travis-ci.org/bast/gtest-demo/builds)
-- [Code coverage](https://coveralls.io/r/bast/gtest-demo)
-- Licensed under [BSD-3](../master/LICENSE)
+Ideally it would be better to have one image configured to build each component,
+or a generic image that is able to build most of the SW components in a project.
+This way we avoid the overhead of building the image (don't know whether
+Jenkins caches the images/containers created this way)
 
-This demo uses the approach presented by Craig Scott in https://crascit.com/2015/07/25/cmake-gtest/.
+Using Docker to build and test the SW ensures that the host running Jenkins 
+(either master or slave) does not get *polluted* with libraries and tools
+required to build several SW components.
 
+## Running the example
 
-## How to build this demo
+To run the example I set up a Docker image that contained Jenkins, Docker and
+the Blue Ocean extension. Don't know why, I could not make work docker under the
+official [Docker image of Jenkins](https://hub.docker.com/r/jenkinsci/blueocean)
 
-```bash
-git clone https://github.com/bast/gtest-demo.git
-cd gtest-demo
-cmake -H. -Bbuild
-cd build
-cmake --build .
-```
+I made it work using the image provided by 
+[Docker-Jenkins (git)](https://github.com/Shimmi/docker-jenkins)
 
+To run the Docker image just type:
 
-## Running the tests
+~~~
+$ docker run -u root --mount
+type=bind,source=/home/ignacio-piqueras/garage,target=/garage -p 8080:8080 -v /home/ignacio-piqueras/jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock --group-add docker shimmi/jenkins
+~~~
 
-Either using `ctest`:
-```
-$ ctest
+The bind mount from my local directory to the `/garage` directory in the
+container was to enable Jenkins to configure a local git repository.
 
-Running tests...
-Test project /home/user/gtest-demo/build
-    Start 1: unit
-1/1 Test #1: unit .............................   Passed    0.00 sec
+### Results
 
-100% tests passed, 0 tests failed out of 1
+After starting Jenkins you can set up a pipeline job that uses
+`/garage/root/to/git/gtest-demo` as source SCM...
 
-Total Test time (real) =   0.00 sec
-```
+![Jenkins prepare stage](jenkins_prepare.png "Jenkins prepare stage")
 
-Or directly using `unit_tests`:
-```
-$ ./bin/unit_tests
+![Jenkins build stage](jenkins_build.png "Jenkins build stage")
 
-[==========] Running 2 tests from 1 test case.
-[----------] Global test environment set-up.
-[----------] 2 tests from example
-[ RUN      ] example.add
-[       OK ] example.add (0 ms)
-[ RUN      ] example.subtract
-[       OK ] example.subtract (0 ms)
-[----------] 2 tests from example (1 ms total)
+![Jenkins test stage](jenkins_test.png "Jenkins test stage")
 
-[----------] Global test environment tear-down
-[==========] 2 tests from 1 test case ran. (1 ms total)
-[  PASSED  ] 2 tests.
+## Links
 
-```
-
-
-## Acknowledgments
-
-- Container Travis setup thanks to [Joan Massich](https://github.com/massich).
-- Clean-up in CMake code thanks to [Claus Klein](https://github.com/ClausKlein).
-
-
-## References
-
-- https://crascit.com/2015/07/25/cmake-gtest/
+ * [GTest example](https://github.com/bast/gtest-demo)
+ * [Using Docker with Pipeline](https://jenkins.io/doc/book/pipeline/docker/)
+ * [Docker-Jenkins](https://github.com/Shimmi/docker-jenkins)
