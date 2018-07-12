@@ -27,4 +27,10 @@ pipeline {
             }
         }
     }
+    post {
+        always {
+            archiveArtifacts artifacts: 'build/bin/unit_tests', fingerprint: true
+            junit 'build/*.xml'
+        }
+    }
 }
