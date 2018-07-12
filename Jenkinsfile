@@ -2,6 +2,10 @@ pipeline {
     agent { dockerfile true }
 
     stages {
+        stage('Prepare') {
+            echo 'Removing any previous report...'
+            sh 'rm -f build/*.xml'
+        }
         stage('Build') {
             steps {
                 echo 'Building...'
@@ -16,14 +20,17 @@ pipeline {
             steps {
                 echo 'Testing...'
                 dir ("build") {
-                    sh './bin/unit_tests'
+                    sh './bin/unit_tests --gtest_output=xml'
                 }
             }
         }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying....'
-            }
+    }
+    post {
+        success {
+            step(xunit
+                thresholds: [ skipped(failureThreshold: '0'), failed(failureThreshold: '0') ],
+                tools: [ GoogleTest(pattern: 'build/*.xml') ])
+            )
         }
     }
 }
